@@ -46,4 +46,4 @@ Para importar esta solução no seu ambiente corporativo:
 4. Altere as variáveis genéricas (como `[ID_DO_GRUPO]`) para os IDs do seu ambiente.
 
 ---
-**Desenvolvido por Arlindo Júnior Honorato** *Focado em construir automações robustas, inteligência artificial aplicada e produtos que escalam operações financeiras.* 🔗 [Conecte-se comigo no LinkedIn] (Link_do_seu_perfil)
+​👤 Autor​Arlindo Júnior Honorato Technical Product Manager | Automação | IA aplicada a Produtos Financeiros e Eficiência de Backoffice
