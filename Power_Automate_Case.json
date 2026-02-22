@@ -1,0 +1,407 @@
+{
+   "name":"[FLOW_ID]",
+   "id":"[CONNECTION_ID]",
+   "type":"Microsoft.Flow/flows",
+   "properties":{
+      "apiId":"/providers/Microsoft.PowerApps/apis/shared_logicflows",
+      "displayName":"Formulário Planner PO",
+      "definition":{
+         "metadata":{
+            "workflowEntityId":null,
+            "processAdvisorMetadata":null,
+            "flowChargedByPaygo":null,
+            "flowclientsuspensionreason":"None",
+            "flowclientsuspensiontime":null,
+            "flowclientsuspensionreasondetails":null,
+            "creator":{
+			   "id":"[ID_DO_USUARIO]",
+			   "tenantId":"[ID_DO_TENANT]",
+               "tenantId":"[ID_DO_TENANT]"
+            },
+            "provisioningMethod":"FromDefinition",
+            "failureAlertSubscription":true,
+            "clientLastModifiedTime":"2026-02-22T21:31:45.7210966Z",
+            "connectionKeySavedTimeKey":"2026-02-22T21:31:45.7210966Z",
+            "creationSource":"Portal",
+            "modifiedSources":"Portal"
+         },
+         "$schema":"https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+         "contentVersion":"1.0.0.0",
+         "parameters":{
+            "$authentication":{
+               "defaultValue":{
+                  
+               },
+               "type":"SecureObject"
+            },
+            "$connections":{
+               "defaultValue":{
+                  
+               },
+               "type":"Object"
+            }
+         },
+         "triggers":{
+            "manual":{
+               "metadata":{
+                  "flowSystemMetadata":{
+                     "swaggerOperationId":"ForASelectedMessageV2",
+                     "taskModuleWidth":null,
+                     "taskModuleHeight":null,
+                     "inputsAdaptiveCard":"{}"
+                  }
+               },
+               "type":"Request",
+               "kind":"ApiConnection",
+               "inputs":{
+                  "operationId":"ForASelectedMessageV2",
+                  "parameters":{
+                     "inputsAdaptiveCard":"{}"
+                  },
+                  "host":{
+                     "connection":{
+                        "name":"@parameters('$connections')['shared_teams-1']['connectionId']"
+                     },
+                     "api":{
+                        "runtimeUrl":"https://flow-apim-msmanaged-na-centralus-01.azure-apim.net/apim/teams"
+                     }
+                  },
+                  "schema":{
+                     "type":"object",
+                     "properties":{
+                        
+                     },
+                     "required":[
+                        
+                     ]
+                  }
+               }
+            }
+         },
+         "actions":{
+            "Postar_cartão_adaptável_e_aguardar_uma_resposta":{
+               "runAfter":{
+                  "Compor_Tags":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"OpenApiConnectionWebhook",
+               "inputs":{
+                  "parameters":{
+                     "poster":"Flow bot",
+                     "location":"Channel",
+                     "body/body/messageBody":"{\n  \"type\": \"AdaptiveCard\",\n  \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n  \"version\": \"1.4\",\n  \"body\": [\n    {\n      \"type\": \"TextBlock\",\n      \"text\": \"Registro Rápido - Planner\",\n      \"weight\": \"Bolder\",\n      \"size\": \"Medium\",\n      \"color\": \"Accent\"\n    },\n    {\n      \"type\": \"Input.Text\",\n      \"id\": \"titulo\",\n      \"placeholder\": \"Ex: Refinamento de regras VGBL...\",\n      \"label\": \"Título da Tarefa\",\n      \"isRequired\": true,\n      \"errorMessage\": \"O título é obrigatório\"\n    },\n    {\n      \"type\": \"Input.ChoiceSet\",\n      \"id\": \"prioridade\",\n      \"label\": \"Prioridade\",\n      \"value\": \"5\",\n      \"choices\": [\n        { \"title\": \"Urgente\", \"value\": \"1\" },\n        { \"title\": \"Importante\", \"value\": \"3\" },\n        { \"title\": \"Média\", \"value\": \"5\" },\n        { \"title\": \"Baixa\", \"value\": \"9\" }\n      ]\n    },\n    {\n      \"type\": \"Input.ChoiceSet\",\n      \"id\": \"rotulos\",\n      \"label\": \"Selecione as Tags\",\n      \"isMultiSelect\": true,\n      \"choices\": @{outputs('Compor_Tags')}\n    },\n    {\n      \"type\": \"Input.Text\",\n      \"id\": \"descricao\",\n      \"placeholder\": \"Detalhes da atividade, links, etc.\",\n      \"isMultiline\": true,\n      \"label\": \"Anotações\"\n    },\n    {\n      \"type\": \"ColumnSet\",\n      \"columns\": [\n        {\n          \"type\": \"Column\",\n          \"width\": \"stretch\",\n          \"items\": [\n            {\n              \"type\": \"Input.Date\",\n              \"id\": \"inicio\",\n              \"label\": \"Data de Início\"\n            }\n          ]\n        },\n        {\n          \"type\": \"Column\",\n          \"width\": \"stretch\",\n          \"items\": [\n            {\n              \"type\": \"Input.Date\",\n              \"id\": \"conclusao\",\n              \"label\": \"Data de Conclusão\"\n            }\n          ]\n        }\n      ]\n    }\n  ],\n  \"actions\": [\n    {\n      \"type\": \"Action.Submit\",\n      \"title\": \"Criar no Planner\"\n    }\n  ]\n}",
+                     "body/body/updateMessage":"Thanks for your response!",
+                     "body/body/recipient/groupId":"[ID_DA_EQUIPE_TEAMS]",
+                     "body/body/recipient/channelId":"[ID_DO_CANAL_TEAMS]"
+                  },
+                  "host":{
+                     "apiId":"/providers/Microsoft.PowerApps/apis/shared_teams",
+                     "connectionName":"shared_teams-1",
+                     "operationId":"PostCardAndWaitForResponse"
+                  },
+                  "authentication":{
+                     "value":"@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                     "type":"Raw"
+                  }
+               }
+            },
+            "Criar_uma_tarefa":{
+               "runAfter":{
+                  "Compor_Prioridades":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"OpenApiConnection",
+               "inputs":{
+                  "parameters":{
+                     "body/groupId":"[ID_DO_GRUPO_PLANNER]",
+                     "body/planId":"[ID_DO_PLANO]",
+                     "body/title":"@outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/titulo']",
+                     "body/bucketId":"[ID_DO_BUCKET]",
+                     "body/startDateTime":"@outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/inicio']",
+                     "body/dueDateTime":"@outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/conclusao']",
+                     "body/assignments":"[EMAIL_DO_RESPONSAVEL]",
+                     "body/priority":"@int(outputs('Compor_Prioridades'))"
+                  },
+                  "host":{
+                     "apiId":"/providers/Microsoft.PowerApps/apis/shared_planner",
+                     "connectionName":"shared_planner",
+                     "operationId":"CreateTask_V4"
+                  },
+                  "authentication":{
+                     "value":"@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                     "type":"Raw"
+                  }
+               }
+            },
+            "Compor_Prioridades":{
+               "runAfter":{
+                  "Postar_cartão_adaptável_e_aguardar_uma_resposta":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"Compose",
+               "inputs":"@outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/prioridade']"
+            },
+            "Atualizar_detalhes_da_tarefa":{
+               "runAfter":{
+                  "Criar_uma_tarefa":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"OpenApiConnection",
+               "inputs":{
+                  "parameters":{
+                     "id":"@outputs('Criar_uma_tarefa')?['body/id']",
+                     "body/description":"@outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/descricao']"
+                  },
+                  "host":{
+                     "apiId":"/providers/Microsoft.PowerApps/apis/shared_planner",
+                     "connectionName":"shared_planner",
+                     "operationId":"UpdateTaskDetails_V2"
+                  },
+                  "authentication":{
+                     "value":"@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                     "type":"Raw"
+                  }
+               }
+            },
+            "Atualizar_uma_tarefa_(V2)":{
+               "runAfter":{
+                  "Atualizar_detalhes_da_tarefa":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"OpenApiConnection",
+               "inputs":{
+                  "parameters":{
+                     "id":"@outputs('Atualizar_detalhes_da_tarefa')?['body/id']",
+                     "body/appliedCategories/category1":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category1')",
+                     "body/appliedCategories/category2":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category2')",
+                     "body/appliedCategories/category3":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category3')",
+                     "body/appliedCategories/category4":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category4')",
+                     "body/appliedCategories/category5":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category5')",
+                     "body/appliedCategories/category6":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category6')",
+                     "body/appliedCategories/category7":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category7')",
+                     "body/appliedCategories/category8":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category8')",
+                     "body/appliedCategories/category9":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category9')",
+                     "body/appliedCategories/category10":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category10')",
+                     "body/appliedCategories/category11":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category11')",
+                     "body/appliedCategories/category12":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category12')",
+                     "body/appliedCategories/category13":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category13')",
+                     "body/appliedCategories/category14":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category14')",
+                     "body/appliedCategories/category15":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category15')",
+                     "body/appliedCategories/category16":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category16')",
+                     "body/appliedCategories/category17":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category17')",
+                     "body/appliedCategories/category18":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category18')",
+                     "body/appliedCategories/category19":"@contains(body('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['data']?['rotulos'], 'category19')",
+                     "body/appliedCategories/category20":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category20')",
+                     "body/appliedCategories/category21":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category21')",
+                     "body/appliedCategories/category22":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category22')",
+                     "body/appliedCategories/category23":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category23')",
+                     "body/appliedCategories/category24":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category24')",
+                     "body/appliedCategories/category25":"@contains(split(outputs('Postar_cartão_adaptável_e_aguardar_uma_resposta')?['body/data/rotulos'], ','), 'category25')"
+                  },
+                  "host":{
+                     "apiId":"/providers/Microsoft.PowerApps/apis/shared_planner",
+                     "connectionName":"shared_planner",
+                     "operationId":"UpdateTask_V3"
+                  },
+                  "authentication":{
+                     "value":"@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                     "type":"Raw"
+                  }
+               }
+            },
+            "ObterDetalhesPlano":{
+               "runAfter":{
+                  
+               },
+               "type":"OpenApiConnection",
+               "inputs":{
+                  "parameters":{
+                     "id":"@'[ID_DO_PLANO]'"
+                  },
+                  "host":{
+                     "apiId":"/providers/Microsoft.PowerApps/apis/shared_planner",
+                     "connectionName":"shared_planner",
+                     "operationId":"GetPlanDetails"
+                  },
+                  "authentication":{
+                     "value":"@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                     "type":"Raw"
+                  }
+               }
+            },
+            "Compor_Tags":{
+               "runAfter":{
+                  "ObterDetalhesPlano":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"Compose",
+               "inputs":[
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category1']}",
+                     "value":"category1"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category2']}",
+                     "value":"category2"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category3']}",
+                     "value":"category3"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category4']}",
+                     "value":"category4"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category5']}",
+                     "value":"category5"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category6']}",
+                     "value":"category6"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category7']}",
+                     "value":"category7"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category8']}",
+                     "value":"category8"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category9']}",
+                     "value":"category9"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category10']}",
+                     "value":"category10"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category11']}",
+                     "value":"category11"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category12']}",
+                     "value":"category12"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category13']}",
+                     "value":"category13"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category14']}",
+                     "value":"category14"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category15']}",
+                     "value":"category15"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category16']}",
+                     "value":"category16"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category17']}",
+                     "value":"category17"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category18']}",
+                     "value":"category18"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category19']}",
+                     "value":"category19"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category20']}",
+                     "value":"category20"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category21']}",
+                     "value":"category21"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category22']}",
+                     "value":"category22"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category23']}",
+                     "value":"category23"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category24']}",
+                     "value":"category24"
+                  },
+                  {
+                     "title":"@{outputs('ObterDetalhesPlano')?['body/categoryDescriptions/category25']}",
+                     "value":"category25"
+                  }
+               ]
+            },
+            "Postar_mensagem_em_um_chat_ou_canal":{
+               "runAfter":{
+                  "Atualizar_uma_tarefa_(V2)":[
+                     "Succeeded"
+                  ]
+               },
+               "type":"OpenApiConnection",
+               "inputs":{
+                  "parameters":{
+                     "poster":"Flow bot",
+                     "location":"Channel",
+                     "body/recipient/groupId":"[ID_DA_EQUIPE_TEAMS]",
+                     "body/recipient/channelId":"[ID_DO_CANAL_TEAMS]",
+                     "body/messageBody":"<p>✅ Tarefa gerada com sucesso e categorizada no Planner!</p><br><br><br><p><strong>Título:</strong> @{outputs('Criar_uma_tarefa')?['body/title']}</p><br><br><br><p>🔗 <a href=\"https://tasks.office.com/[DOMINIO_DA_EMPRESA]/en-US/Home/Planner#/plantaskboard?groupId=[ID_DO_GRUPO_PLANNER]&amp;planId=@{outputs('Criar_uma_tarefa')?['body/planId']}&amp;taskId=@{outputs('Criar_uma_tarefa')?['body/id']}\">Clique aqui para abrir o card detalhado</a></p>"
+                  },
+                  "host":{
+                     "apiId":"/providers/Microsoft.PowerApps/apis/shared_teams",
+                     "connectionName":"shared_teams",
+                     "operationId":"PostMessageToConversation"
+                  },
+                  "authentication":{
+                     "value":"@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                     "type":"Raw"
+                  }
+               }
+            }
+         },
+         "outputs":{
+            
+         }
+      },
+      "connectionReferences":{
+         "shared_teams-1":{
+            "connectionName":"shared-teams-a962855b-bf64-4d53-9f39-a84e35d75f14",
+            "source":"Invoker",
+            "id":"/providers/Microsoft.PowerApps/apis/shared_teams",
+            "tier":"NotSpecified",
+            "apiName":"teams",
+            "isProcessSimpleApiReferenceConversionAlreadyDone":false
+         },
+         "shared_planner":{
+            "connectionName":"shared-planner-a5c54e59-f12a-4358-89c4-5d19eba26bc8",
+            "source":"Invoker",
+            "id":"/providers/Microsoft.PowerApps/apis/shared_planner",
+            "tier":"NotSpecified",
+            "apiName":"planner",
+            "isProcessSimpleApiReferenceConversionAlreadyDone":false
+         },
+         "shared_teams":{
+            "connectionName":"shared-teams-2621253f-0fba-46b7-9119-58f014650523",
+            "source":"Invoker",
+            "id":"/providers/Microsoft.PowerApps/apis/shared_teams",
+            "tier":"NotSpecified",
+            "apiName":"teams",
+            "isProcessSimpleApiReferenceConversionAlreadyDone":false
+         }
+      },
+      "flowFailureAlertSubscribed":false,
+      "isManaged":false
+   }
+}
