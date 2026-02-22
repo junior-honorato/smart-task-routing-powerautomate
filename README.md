@@ -18,8 +18,7 @@ Criei um fluxo no Power Automate que atua como um *middleware* inteligente. Ele 
 3. A automação processa as tags selecionadas e cria a tarefa no Planner.
 4. O robô retorna uma notificação rica em HTML no Teams com um *Deep Link* direto para o card criado.
 
-> 📸 **[SUGESTÃO DE PRINT 1]** > *Insira aqui uma captura de tela limpa mostrando o fluxo completo (a árvore de ações) no Power Automate.*
-> 
+<img width="903" height="1588" alt="tmp_29ccb96c-91ad-4e71-8bca-c8ee5b82c030" src="https://github.com/user-attachments/assets/2d14e706-939c-4e82-bb4a-25dc027c24b4" />
 
 ## 🚧 Desafios Técnicos e Decisões de Produto
 
@@ -29,15 +28,15 @@ Como Technical Product Manager, o maior desafio foi equilibrar a viabilidade té
 * **O Incidente:** O conector do Teams retorna múltiplas tags selecionadas como uma string única (ex: `"category2,category20"`). A função nativa `contains` gerava falsos positivos, marcando a `category2` como verdadeira sempre que a `category20` estava presente.
 * **A Solução:** Implementei a função `split()` no Power Automate para quebrar a string nas vírgulas e forçar a conversão para um Array rigoroso, garantindo a validação da string exata e a integridade dos dados inseridos no Planner.
 
-> 📸 **[SUGESTÃO DE PRINT 2]** > *Insira aqui um print focado na caixinha de expressão (fx) mostrando o uso da sua fórmula com o `split` e o `contains`.*
-> 
+<img width="1386" height="851" alt="tmp_5843d8d5-1877-4a3a-a0fe-37848f3ebafa" src="https://github.com/user-attachments/assets/2cb4e2e5-4569-4de3-95f9-66ac4fe7ffbc" />
+
 
 ### 2. Limitações de Infraestrutura vs. Foco em ROI (Workaround)
 * **O Bloqueio:** Para forçar o Planner a mostrar a descrição na capa do card automaticamente, era necessário um comando HTTP PATCH via Microsoft Graph API. No entanto, conectores *Standard* do ecossistema possuem restrições rígidas de URI (exigindo rotas `/groups/`).
 * **Decisão de Produto:** Em vez de onerar o projeto exigindo licenciamento Premium ou a criação de um App no Microsoft Entra ID (Azure AD), tomei a decisão de pivotar a interface final. Criei um workaround onde a automação compensa a limitação visual gerando dinamicamente um link rastreável no Teams que injeta o usuário diretamente dentro do card expandido. Redução de complexidade técnica com manutenção da excelente experiência do usuário.
 
-> 📸 **[SUGESTÃO DE PRINT 3]** > *Insira aqui um print da tela do Teams mostrando a mensagem final do Flow Bot com o link bonitinho em azul sendo gerado.*
-> 
+<img width="424" height="287" alt="tmp_7f8ea58d-5637-42fd-b832-706875eac0d2" src="https://github.com/user-attachments/assets/cc356708-8611-4e6c-94d5-9a66dda24ca5" />
+
 
 ## 📦 Como Implementar (Deploy)
 Para importar esta solução no seu ambiente corporativo:
